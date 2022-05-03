@@ -5,6 +5,7 @@ import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 
 const config: Configuration = {
   entry: './src/index.tsx',
+  devtool: 'eval-cheap-module-source-map',
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, '../dist'),

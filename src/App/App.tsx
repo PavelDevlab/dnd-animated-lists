@@ -64,28 +64,52 @@ const renderList = (
   onDrop: (itemId: number, areaName: string) => void,
   spacer: number | null,
 ) => {
-  if (spacer !== null) {
-    list = [...list.slice(0, spacer), { id: listSpacerSymbol, caption: '' }, ...list.slice(spacer)];
-  }
+  const renderListResult = [
+    ...list.map((item, index) => {
+      const getCulcIndex = (index1: number) => {
+        if (spacer === null) {
+          return index1;
+        }
 
-  return list.map((item, index) => {
-    const style = { height: itemHeight, top: index * itemHeight };
-    if (item.id === listSpacerSymbol) {
-      return (
-        <CSSTransition key="UNIQUE-KEY" timeout={500} classNames="list-item" unmountOnExit appear>
-          <ListItemEmpty style={style} />
-        </CSSTransition>
-      );
-    }
+        return index1 >= spacer ? index1 + 1 : index1;
+      };
 
-    return (
-      <CSSTransition key={item.id} timeout={500} classNames="list-item" unmountOnExit appear>
-        <ListItem onDrop={onDrop} id={item.id} style={style}>
-          {item.caption}
-        </ListItem>
-      </CSSTransition>
-    );
-  });
+      const calcIndex = getCulcIndex(index);
+      const style = { height: itemHeight, top: calcIndex * itemHeight };
+
+      if (item.id !== listSpacerSymbol) {
+        return (
+          <CSSTransition key={item.id} timeout={500} classNames="list-item" unmountOnExit appear>
+            <ListItem onDrop={onDrop} id={item.id} style={style}>
+              {item.caption}
+            </ListItem>
+          </CSSTransition>
+        );
+      }
+
+      return null;
+    }),
+    ...(spacer !== null
+      ? [
+          (() => {
+            const style = { height: itemHeight, top: spacer * itemHeight };
+            return (
+              <CSSTransition
+                key="UNIQUE-KEY"
+                timeout={500}
+                classNames="list-item"
+                unmountOnExit
+                appear
+              >
+                <ListItemEmpty style={style} />
+              </CSSTransition>
+            );
+          })(),
+        ]
+      : []),
+  ];
+
+  return renderListResult;
 };
 
 const removeFromList = (list: Item[], item: Item) => {

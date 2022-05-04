@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { DragEventHandler } from 'react';
 import { useDrop } from 'react-dnd';
 
 import { ItemType } from '../ItemTypes';
@@ -37,23 +37,15 @@ export const ListBox = (props: Props) => {
   }
 
   const handleDragOver = (...args: any) => {
-    console.log('over: ', props.id, args);
-
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log('args[0].clientX: ', args[0].clientX);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unused-vars
     const { clientX } = args[0];
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log('args[0].clientY: ', args[0].clientY);
+    // console.log('args[0].clientY: ', args[0].clientY);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
     const { clientY } = args[0];
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unused-vars
     const currentTarget = args[0].currentTarget as HTMLElement;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const target = args[0].target as HTMLElement;
-
-    console.log('target', target);
-    console.log('currentTarget', currentTarget);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     // const drop1 = drop as any;
@@ -63,9 +55,9 @@ export const ListBox = (props: Props) => {
       // const x = clientX - clientRect.left;
       const y = clientY - clientRect.top;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      if (y >= 0 && y <= props.list.length * itemHeight + 5) {
+      if (y >= 0 && y <= props.list.length * (itemHeight + 1) + 5) {
         const listY = y - 5;
-        const index = Math.floor(listY / itemHeight);
+        const index = Math.floor(listY / (itemHeight + 1));
         const resultIndex = Math.min(Math.max(index, 0), props.list.length);
 
         props.onNewSpacerIndex(resultIndex);
@@ -80,12 +72,18 @@ export const ListBox = (props: Props) => {
      onDrag={handleDrag}
    */
 
+  const handleDragLeave: DragEventHandler<HTMLDivElement> = (event) => {
+    if (event.currentTarget === event.target) {
+      props.onNewSpacerIndex(null);
+    }
+  };
+
   return (
     <Root
       ref={drop}
       style={{ backgroundColor }}
       onDragOver={handleDragOver}
-      onDragLeave={() => props.onNewSpacerIndex(null)}
+      onDragLeave={handleDragLeave}
     >
       {props.children}
     </Root>

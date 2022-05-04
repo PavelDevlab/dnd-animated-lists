@@ -103,6 +103,8 @@ export const App = () => {
   const [list2, setList2] = useState(secondList);
   const list1Obj = useRef(list1);
   const list2Obj = useRef(list2);
+  const spacer1Obj = useRef(spacer1);
+  const spacer2Obj = useRef(spacer2);
 
   const handleDrop = (itemId: number, areaName: string) => {
     const list1Item = list1Obj.current.find((item) => {
@@ -130,14 +132,16 @@ export const App = () => {
       return;
     }
 
-    if (areaName === `${ItemType}_first`) {
-      const nextList = [...list1Obj.current, targetItem];
+    if (areaName === `${ItemType}_first` && spacer1Obj.current !== null) {
+      const nextList = [...list1Obj.current];
+      nextList.splice(spacer1Obj.current, 0, targetItem);
       list1Obj.current = nextList;
       setList1(nextList);
     }
 
-    if (areaName === `${ItemType}_second`) {
-      const nextList = [...list2Obj.current, targetItem];
+    if (areaName === `${ItemType}_second` && spacer2Obj.current !== null) {
+      const nextList = [...list2Obj.current];
+      nextList.splice(spacer2Obj.current, 0, targetItem);
       list2Obj.current = nextList;
       setList2(nextList);
     }
@@ -165,10 +169,20 @@ export const App = () => {
    */
 
   const handleNewSpacerIndexList1 = (index: number | null) => {
+    console.log(`1 index: ${String(index)}`);
+    if (index !== null) {
+      spacer1Obj.current = index;
+    }
+
     setSpacer1(index);
   };
 
   const handleNewSpacerIndexList2 = (index: number | null) => {
+    console.log(`2 index: ${String(index)}`);
+    if (index !== null) {
+      spacer2Obj.current = index;
+    }
+
     setSpacer2(index);
   };
 

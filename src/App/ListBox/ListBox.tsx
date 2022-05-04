@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
+
 import { ItemType } from '../ItemTypes';
 import { Root } from './ListBox.style';
 

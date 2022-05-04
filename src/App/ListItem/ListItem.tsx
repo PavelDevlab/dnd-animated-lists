@@ -8,6 +8,7 @@ type Props = {
   id: number;
   children?: React.ReactNode;
   onDrop: (itemId: number, areaName: string) => void;
+  style: { top: number; height: number };
 };
 
 export const ListItem = (props: Props) => {
@@ -31,7 +32,7 @@ export const ListItem = (props: Props) => {
   );
 
   return (
-    <S.Root>
+    <S.Root style={props.style}>
       <S.ListItem ref={drag} dragging={isDragging}>
         {props.children}
       </S.ListItem>

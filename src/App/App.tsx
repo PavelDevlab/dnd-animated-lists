@@ -11,6 +11,8 @@ interface Item {
   caption: string;
 }
 
+const itemHeight = 40;
+
 const firstList = [
   {
     id: 1,
@@ -62,10 +64,14 @@ const secondList = [
 ];
 
 const renderList = (list: Item[], onDrop: (itemId: number, areaName: string) => void) => {
-  return list.map((item) => {
+  return list.map((item, index) => {
     return (
       <CSSTransition key={item.id} timeout={500} classNames="list-item" unmountOnExit appear>
-        <ListItem onDrop={onDrop} id={item.id}>
+        <ListItem
+          onDrop={onDrop}
+          id={item.id}
+          style={{ height: itemHeight, top: index * itemHeight }}
+        >
           {item.caption}
         </ListItem>
       </CSSTransition>
@@ -151,13 +157,17 @@ export const App = () => {
     <S.Root>
       <S.Column>
         <ListBox id="first">
-          <TransitionGroup component="div">{renderList(list1, handleDrop)}</TransitionGroup>
+          <S.ListBoxInner style={{ height: list1.length * itemHeight }}>
+            <TransitionGroup component="div">{renderList(list1, handleDrop)}</TransitionGroup>
+          </S.ListBoxInner>
         </ListBox>
       </S.Column>
       <S.Spacer />
       <S.Column>
         <ListBox id="second">
-          <TransitionGroup component="div">{renderList(list2, handleDrop)}</TransitionGroup>
+          <S.ListBoxInner style={{ height: list2.length * itemHeight }}>
+            <TransitionGroup component="div">{renderList(list2, handleDrop)}</TransitionGroup>
+          </S.ListBoxInner>
         </ListBox>
       </S.Column>
     </S.Root>

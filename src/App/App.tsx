@@ -115,6 +115,7 @@ const renderList = (
 const removeFromList = (list: Item[], item: Item) => {
   const itemIndex = list.indexOf(item);
 
+  list = [...list];
   list.splice(itemIndex, 1);
 
   return [...list];
@@ -130,11 +131,13 @@ export const App = () => {
   const spacer1Obj = useRef(spacer1);
   const spacer2Obj = useRef(spacer2);
 
-  const handleDrop = (itemId: number, areaName: string) => {
+  const handleDrop = (itemId: number, areaName: string, listName: string) => {
+    const prevList1ObjValue = list1Obj.current;
     const list1Item = list1Obj.current.find((item) => {
       return item.id === itemId;
     });
 
+    const prevList2ObjValue = list2Obj.current;
     const list2Item = list2Obj.current.find((item) => {
       return item.id === itemId;
     });
@@ -158,17 +161,47 @@ export const App = () => {
 
     if (areaName === `${ItemType}_first` && spacer1Obj.current !== null) {
       const nextList = [...list1Obj.current];
-      nextList.splice(spacer1Obj.current, 0, targetItem);
+
+      if (`${ItemType}_first` === listName) {
+        const targetItemIndex = prevList1ObjValue.indexOf(targetItem);
+        nextList.splice(
+          spacer1Obj.current > targetItemIndex ? spacer1Obj.current - 1 : spacer1Obj.current,
+          0,
+          targetItem,
+        );
+      } else {
+        nextList.splice(spacer1Obj.current, 0, targetItem);
+      }
+
       list1Obj.current = nextList;
       setList1(nextList);
     }
 
     if (areaName === `${ItemType}_second` && spacer2Obj.current !== null) {
       const nextList = [...list2Obj.current];
-      nextList.splice(spacer2Obj.current, 0, targetItem);
+
+      if (`${ItemType}_second` === listName) {
+        const targetItemIndex = prevList2ObjValue.indexOf(targetItem);
+        nextList.splice(
+          spacer2Obj.current > targetItemIndex ? spacer2Obj.current - 1 : spacer2Obj.current,
+          0,
+          targetItem,
+        );
+      } else {
+        nextList.splice(spacer2Obj.current, 0, targetItem);
+      }
+
       list2Obj.current = nextList;
       setList2(nextList);
     }
+  };
+
+  const handleDropList1 = (itemId: number, areaName: string) => {
+    handleDrop(itemId, areaName, `${ItemType}_first`);
+  };
+
+  const handleDropList2 = (itemId: number, areaName: string) => {
+    handleDrop(itemId, areaName, `${ItemType}_second`);
   };
 
   /*
@@ -218,7 +251,7 @@ export const App = () => {
             style={{ height: (list1.length + (spacer1 !== null ? 1 : 0)) * itemHeight }}
           >
             <TransitionGroup component="div">
-              {renderList(list1, handleDrop, spacer1)}
+              {renderList(list1, handleDropList1, spacer1)}
             </TransitionGroup>
           </S.ListBoxInner>
         </ListBox>
@@ -230,7 +263,7 @@ export const App = () => {
             style={{ height: (list2.length + (spacer2 !== null ? 1 : 0)) * itemHeight }}
           >
             <TransitionGroup component="div">
-              {renderList(list2, handleDrop, spacer2)}
+              {renderList(list2, handleDropList2, spacer2)}
             </TransitionGroup>
           </S.ListBoxInner>
         </ListBox>

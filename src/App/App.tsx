@@ -5,13 +5,9 @@ import * as S from './App.style';
 import { ListItem } from './ListItem/ListItem';
 import { ListBox } from './ListBox/ListBox';
 import { ItemType } from './ItemTypes';
-
-interface Item {
-  id: number;
-  caption: string;
-}
-
-const itemHeight = 40;
+import { itemHeight } from './definitions';
+import { Item, listSpacerSymbol } from './types';
+import { ListItemEmpty } from './ListItem/ListItemEmpty';
 
 const firstList = [
   {
@@ -38,7 +34,7 @@ const firstList = [
     id: 6,
     caption: 'Пятячек',
   },
-];
+] as Item[];
 
 const secondList = [
   {
@@ -61,17 +57,30 @@ const secondList = [
     id: 11,
     caption: 'Лунтик',
   },
-];
+] as Item[];
 
-const renderList = (list: Item[], onDrop: (itemId: number, areaName: string) => void) => {
+const renderList = (
+  list: Item[],
+  onDrop: (itemId: number, areaName: string) => void,
+  spacer: number | null,
+) => {
+  if (spacer !== null) {
+    list = [...list.slice(0, spacer), { id: listSpacerSymbol, caption: '' }, ...list.slice(spacer)];
+  }
+
   return list.map((item, index) => {
+    const style = { height: itemHeight, top: index * itemHeight };
+    if (item.id === listSpacerSymbol) {
+      return (
+        <CSSTransition key="UNIQUE-KEY" timeout={500} classNames="list-item" unmountOnExit appear>
+          <ListItemEmpty style={style} />
+        </CSSTransition>
+      );
+    }
+
     return (
       <CSSTransition key={item.id} timeout={500} classNames="list-item" unmountOnExit appear>
-        <ListItem
-          onDrop={onDrop}
-          id={item.id}
-          style={{ height: itemHeight, top: index * itemHeight }}
-        >
+        <ListItem onDrop={onDrop} id={item.id} style={style}>
           {item.caption}
         </ListItem>
       </CSSTransition>
@@ -88,6 +97,8 @@ const removeFromList = (list: Item[], item: Item) => {
 };
 
 export const App = () => {
+  const [spacer1, setSpacer1] = useState<number | null>(null);
+  const [spacer2, setSpacer2] = useState<number | null>(null);
   const [list1, setList1] = useState(firstList);
   const [list2, setList2] = useState(secondList);
   const list1Obj = useRef(list1);
@@ -153,20 +164,36 @@ export const App = () => {
     }, [list1, list2]);
    */
 
+  const handleNewSpacerIndexList1 = (index: number | null) => {
+    setSpacer1(index);
+  };
+
+  const handleNewSpacerIndexList2 = (index: number | null) => {
+    setSpacer2(index);
+  };
+
   return (
     <S.Root>
       <S.Column>
-        <ListBox id="first">
-          <S.ListBoxInner style={{ height: list1.length * itemHeight }}>
-            <TransitionGroup component="div">{renderList(list1, handleDrop)}</TransitionGroup>
+        <ListBox id="first" list={list1} onNewSpacerIndex={handleNewSpacerIndexList1}>
+          <S.ListBoxInner
+            style={{ height: (list1.length + (spacer1 !== null ? 1 : 0)) * itemHeight }}
+          >
+            <TransitionGroup component="div">
+              {renderList(list1, handleDrop, spacer1)}
+            </TransitionGroup>
           </S.ListBoxInner>
         </ListBox>
       </S.Column>
       <S.Spacer />
       <S.Column>
-        <ListBox id="second">
-          <S.ListBoxInner style={{ height: list2.length * itemHeight }}>
-            <TransitionGroup component="div">{renderList(list2, handleDrop)}</TransitionGroup>
+        <ListBox id="second" list={list2} onNewSpacerIndex={handleNewSpacerIndexList2}>
+          <S.ListBoxInner
+            style={{ height: (list2.length + (spacer2 !== null ? 1 : 0)) * itemHeight }}
+          >
+            <TransitionGroup component="div">
+              {renderList(list2, handleDrop, spacer2)}
+            </TransitionGroup>
           </S.ListBoxInner>
         </ListBox>
       </S.Column>

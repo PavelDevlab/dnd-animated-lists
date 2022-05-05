@@ -10,14 +10,14 @@ type Props = {
   id: string;
   children: React.ReactNode;
   list: Item[];
-  onNewSpacerIndex: (index: number | null) => void;
+  onNewSpacerIndex: (index: number) => void;
 };
 
 export const ListBox = (props: Props) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: ItemType,
     drop: () => {
-      props.onNewSpacerIndex(null);
+      props.onNewSpacerIndex(-1);
 
       return { name: `${ItemType}_${props.id}` };
     },
@@ -74,7 +74,7 @@ export const ListBox = (props: Props) => {
 
   const handleDragLeave: DragEventHandler<HTMLDivElement> = (event) => {
     if (event.currentTarget === event.target) {
-      props.onNewSpacerIndex(null);
+      props.onNewSpacerIndex(-1);
     }
   };
 

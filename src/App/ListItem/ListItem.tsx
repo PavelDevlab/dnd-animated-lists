@@ -7,8 +7,9 @@ import { ItemType } from '../ItemTypes';
 type Props = {
   id: number;
   children?: React.ReactNode;
-  onDrop: (itemId: number, areaName: string) => void;
+  onDrop: (itemId: number, index: number) => void;
   style: { top: number; height: number };
+  index: number;
 };
 
 export const ListItem = (props: Props) => {
@@ -21,7 +22,7 @@ export const ListItem = (props: Props) => {
         if (item && dropResult) {
           console.log(`You dropped ${item.id} into ${dropResult.name}!`);
 
-          props.onDrop(item.id, dropResult.name);
+          props.onDrop(item.id, props.index);
         }
       },
       collect: (monitor) => ({

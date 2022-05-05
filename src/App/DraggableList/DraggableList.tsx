@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
 import { itemHeight } from '../definitions';
@@ -6,7 +6,7 @@ import { itemHeight } from '../definitions';
 import { ListBox } from '../ListBox/ListBox';
 import * as S from '../App.style';
 import { StoreContext } from '../Store/Store';
-import { List } from './List';
+import { renderList, renderSpacerIfNecessarily } from './List';
 
 type Props = {
   name: 'first' | 'second';
@@ -26,13 +26,20 @@ export const DraggableList = (props: Props) => {
   };
 
   const height = (list.length + (spacer !== -1 ? 1 : 0)) * itemHeight;
+  const dropHandlerCarrier = useRef(handleDrop);
+  dropHandlerCarrier.current = handleDrop;
+
+  const cachedDropHandler = (itemId: number, index: number) => {
+    return dropHandlerCarrier.current(itemId, index, spacer);
+  };
 
   return (
     <S.Column>
       <ListBox id="second" list={list} onNewSpacerIndex={handleNewSpacerIndexList}>
         <S.ListBoxInner style={{ height }}>
           <TransitionGroup component="div">
-            <List list={list} onDrop={handleDrop} spacer={spacer} />
+            {renderList(list, cachedDropHandler, spacer)}
+            {renderSpacerIfNecessarily(spacer)}
           </TransitionGroup>
         </S.ListBoxInner>
       </ListBox>

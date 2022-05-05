@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 import { Item } from '../types';
@@ -6,13 +6,7 @@ import { itemHeight } from '../definitions';
 import { ListItem } from '../ListItem/ListItem';
 import { ListItemEmpty } from '../ListItem/ListItemEmpty';
 
-type Props = {
-  list: Item[];
-  onDrop: (itemId: number, index: number, spacer: number) => void;
-  spacer: number;
-};
-
-const renderSpacerIfNecessarily = (spacer: number) => {
+export const renderSpacerIfNecessarily = (spacer: number) => {
   const style = { height: itemHeight, top: spacer * itemHeight };
 
   return (
@@ -30,7 +24,7 @@ const getOrderAccordingToSpacer = (index: number, spacer: number) => {
   return index >= spacer ? index + 1 : index;
 };
 
-const renderList = (
+export const renderList = (
   list: Item[],
   onDrop: (itemId: number, index: number) => void,
   spacer: number,
@@ -47,20 +41,4 @@ const renderList = (
       </CSSTransition>
     );
   });
-};
-
-export const List = ({ list, onDrop, spacer }: Props) => {
-  const dropHandlerCarrier = useRef(onDrop);
-  dropHandlerCarrier.current = onDrop;
-
-  const cachedDropHandler = (itemId: number, index: number) => {
-    return dropHandlerCarrier.current(itemId, index, spacer);
-  };
-
-  return (
-    <>
-      {renderList(list, cachedDropHandler, spacer)}
-      {renderSpacerIfNecessarily(spacer)}
-    </>
-  );
 };

@@ -30,7 +30,7 @@ export const firstList = [
 export const secondList = [
   {
     id: 7,
-    caption: 'Oatmeal',
+    caption: 'Lamborghini',
   },
   {
     id: 8,

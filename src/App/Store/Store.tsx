@@ -3,12 +3,7 @@ import React, { useState } from 'react';
 import { firstList, secondList } from './data';
 import { Item } from '../types';
 
-type SetItemMethod = (
-  itemId: number,
-  index: number,
-  spacer: number,
-  name: 'first' | 'second',
-) => void;
+type SetItemMethod = (itemId: number, spacer: number, name: 'first' | 'second') => void;
 
 const emptySetList: SetItemMethod = () => {};
 const emptyList: Item[] = [];
@@ -35,19 +30,19 @@ const createInitialState = () => {
 };
 
 const getOrderAccordingToSpacer = (index: number, spacer: number) => {
-  return index > spacer ? index-- : index;
+  return spacer > index ? spacer - 1 : spacer;
 };
 
 export const Store = (props: Props) => {
   const [store, setStore] = useState(createInitialState);
   const setItem = React.useCallback<SetItemMethod>(
-    (itemId, droppedItemIndex, spacer, listName) => {
+    (itemId, spacer, listName) => {
       const listIndex = {
         first: store.first.findIndex((item) => {
-          return item.id !== itemId;
+          return item.id === itemId;
         }),
         second: store.second.findIndex((item) => {
-          return item.id !== itemId;
+          return item.id === itemId;
         }),
       };
 
@@ -61,6 +56,7 @@ export const Store = (props: Props) => {
         ...store,
       };
 
+      let droppedItemIndex = -1;
       (Object.keys(listIndex) as Array<'first' | 'second'>).forEach((name) => {
         if (listIndex[name] === -1) {
           return;
@@ -68,11 +64,12 @@ export const Store = (props: Props) => {
 
         nextStore[name] = [...nextStore[name]];
         nextStore[name].splice(listIndex[name], 1);
+        droppedItemIndex = listIndex[name];
       });
 
-      const index = isTheSameList ? getOrderAccordingToSpacer(droppedItemIndex, spacer) : spacer;
-      const list = [...store[listName]];
-      list.splice(index, 0, targetItem);
+      const order = isTheSameList ? getOrderAccordingToSpacer(droppedItemIndex, spacer) : spacer;
+      const list = [...nextStore[listName]];
+      list.splice(order, 0, targetItem);
 
       nextStore = {
         ...nextStore,

@@ -11,12 +11,14 @@ type Props = {
   children: React.ReactNode;
   list: Item[];
   onNewSpacerIndex: (index: number) => void;
+  onDrop: (item: Item) => void;
 };
 
 export const ListBox = (props: Props) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: ItemType,
-    drop: () => {
+    drop: (item: Item) => {
+      props.onDrop(item);
       props.onNewSpacerIndex(-1);
 
       return { name: `${ItemType}_${props.id}` };

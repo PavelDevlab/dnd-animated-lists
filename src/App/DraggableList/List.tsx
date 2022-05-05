@@ -24,18 +24,14 @@ const getOrderAccordingToSpacer = (index: number, spacer: number) => {
   return index >= spacer ? index + 1 : index;
 };
 
-export const renderList = (
-  list: Item[],
-  onDrop: (itemId: number, index: number) => void,
-  spacer: number,
-) => {
+export const renderList = (list: Item[], spacer: number) => {
   return list.map((item, index) => {
     const order = getOrderAccordingToSpacer(index, spacer);
     const style = { height: itemHeight, top: order * itemHeight };
 
     return (
       <CSSTransition key={item.id} timeout={500} classNames="list-item" unmountOnExit appear>
-        <ListItem onDrop={onDrop} id={item.id} style={style} index={index}>
+        <ListItem id={item.id} style={style}>
           {item.caption}
         </ListItem>
       </CSSTransition>

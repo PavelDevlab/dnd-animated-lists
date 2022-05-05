@@ -12,14 +12,15 @@ type Props = {
   list: Item[];
   onNewSpacerIndex: (index: number) => void;
   onDrop: (item: Item) => void;
+  style: { height: number };
 };
 
 export const ListBox = (props: Props) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: ItemType,
     drop: (item: Item) => {
-      props.onDrop(item);
       props.onNewSpacerIndex(-1);
+      props.onDrop(item);
 
       return { name: `${ItemType}_${props.id}` };
     },
@@ -37,6 +38,25 @@ export const ListBox = (props: Props) => {
   } else if (canDrop) {
     backgroundColor = '#eeeeee';
   }
+
+  /*
+    const isItInside = (event: React.DragEvent<HTMLDivElement>) => {
+      const { clientX, clientY, currentTarget } = event;
+
+      if (currentTarget) {
+        const clientRect = currentTarget.getBoundingClientRect();
+        const y = clientY - clientRect.top;
+        const x = clientX - clientRect.left;
+        const isXInside = x <= clientRect.width && x >= 0;
+        const isYInside = y <= clientRect.height && y >= 0;
+        const result = isXInside && isYInside;
+
+        return result;
+      }
+
+      return false;
+    };
+  */
 
   const handleDragOver = (...args: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -57,9 +77,9 @@ export const ListBox = (props: Props) => {
       // const x = clientX - clientRect.left;
       const y = clientY - clientRect.top;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      if (y >= 0 && y <= props.list.length * (itemHeight + 1) + 5) {
+      if (y >= 0 && y <= props.list.length * (itemHeight + 1) + 10) {
         const listY = y - 5;
-        const index = Math.floor(listY / (itemHeight + 1));
+        const index = Math.floor(listY / itemHeight);
         const resultIndex = Math.min(Math.max(index, 0), props.list.length);
 
         props.onNewSpacerIndex(resultIndex);
@@ -83,7 +103,7 @@ export const ListBox = (props: Props) => {
   return (
     <Root
       ref={drop}
-      style={{ backgroundColor }}
+      style={{ ...props.style, backgroundColor }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >

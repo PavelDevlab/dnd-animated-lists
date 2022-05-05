@@ -46,6 +46,7 @@ export const DraggableList = (props: Props) => {
         id="second"
         list={list}
         onNewSpacerIndex={handleNewSpacerIndexList}
+        style={{ height: height + 10 }}
       >
         <S.ListBoxInner style={{ height }}>
           <TransitionGroup component="div">
